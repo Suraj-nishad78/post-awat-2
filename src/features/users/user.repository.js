@@ -1,40 +1,39 @@
-import {BSON}  from 'bson'
-import {getDatabase}  from '../../database/mongoDb.js'
 
-const db = getDatabase();
 
-const getUsers = async () =>{
-    try{
-        const users = await db.collection('users').find({}, {projection:{password:0}}).toArray();
-        return users;
-    } catch (error){
-        console.log("Error while getting users: ", error);
-    }
-}
+import mongoose from 'mongoose';
+import {userSchema} from "./user.schema.js"
+
+
+export const UserModel = mongoose.model("User", userSchema)
 
 const signup = async (newUser) =>{
-    try{
-        const user = await db.collection('users').insertOne(newUser)
-        return user
-    } catch (err){
-        console.log("Error while Signup: ", err);
-    }
+   try{
+       const user =  await UserModel.create(newUser)
+       return user;
+   } catch(err){
+    console.log("Error while creating", err);
+   }
+
 }
 
 const signin = async (email) =>{
     try{
-        const user = await db.collection('users').findOne({email})
+        const user = await UserModel.findOne({email})
         return user;
     } catch (err){
-        console.log("Error while Signup: ", err);
+        console.log("Error while Signin: ", err);
     }
+}
+
+const getUsers = async () =>{
+   const users = await UserModel.find({}, {password:0})
+   return users;
 }
 
 const findOneUser = async (userId) =>{
     try{
-        const _id = new BSON.ObjectId(userId);
-        // const user = await db.collection('users').findOne({_id}, {projection:{password:0}})
-        const user = await db.collection('users').findOne({_id})
+        const _id = userId;
+        const user = await UserModel.findOne({_id})
         return user;
     } catch (err){
         console.log("Error while Signup: ", err);
@@ -43,8 +42,9 @@ const findOneUser = async (userId) =>{
 
 const updateDetails = async(userId, updatedata) =>{
     try{
-        const _id = new BSON.ObjectId(userId);
-        const user = await db.collection('users').updateOne({_id}, {$set: updatedata})
+        const _id = userId;
+        const userUpdate = await UserModel.findByIdAndUpdate(_id, updatedata)
+        const user = await UserModel.findOne({_id})
         return user;
     } catch (err){
         console.log("Error while Signup: ", err);

@@ -11,7 +11,6 @@ router.post("/signup", userCntrl.signupUser)
 router.post("/signin", userCntrl.loginUser)
 router.get("/logout", isLoggedIn, userCntrl.logoutUser)
 
-
 router.get("/get-all-details", userCntrl.allUsers)
 router.get("/get-all-details/:userId",  userCntrl.getUserDetails)
 router.patch("/update-details/:userId", isLoggedIn,  upload.single('imageUrl'), userCntrl.updateUserDetails)

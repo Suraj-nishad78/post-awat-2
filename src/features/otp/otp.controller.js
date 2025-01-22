@@ -6,7 +6,7 @@ import {customErrorHandler} from "../../middleware/errorHandler.middleware.js"
 
 const otpSend = async (req, res, next) =>{
     try{
-        const userId = req.user._id;
+        const userId = req.user._doc._id;
         const otpNum = req.otp;
         const otp = await bcrypt.hash(otpNum, 10)
         const otpCreation = await otpRepo.otpCreated(userId, otp);
@@ -26,7 +26,7 @@ const otpSend = async (req, res, next) =>{
 const otpVarify = async (req, res, next) =>{
     try {
         const {otp} = req.body;
-        const userId = req.user._id;
+        const userId = req.user._doc._id;
 
         if(!otp){
             throw new customErrorHandler(400, "Please enter a otp!")
@@ -43,12 +43,12 @@ const otpVarify = async (req, res, next) =>{
             throw new customErrorHandler(400, "The OTP entered is incorrect.")
         }
         
-        let otpToken = jwt.sign({checkOtpAuth}, process.env.PRIVATE_KEY, {expiresIn:"10m"});
+        let otpToken = jwt.sign({checkOtpAuth}, process.env.PRIVATE_KEY, {expiresIn:"5m"});
 
-        res.status(200).json({
+        res.cookie("otpVarified", otpToken, {httpOnly:true, maxAge: 5 * 60 * 1000})
+        .status(200).json({
             status:"Success",
-            msg:"OTP verified successfully.",
-            "Otp Token":otpToken
+            msg:"OTP verified successfully."
         })
     } catch (err){
         next(err)
@@ -58,13 +58,15 @@ const otpVarify = async (req, res, next) =>{
 const resetPassword = async (req, res, next) =>{
     try {
 
-        const userId = req.user._id;
-        const{token, newPassowrd, confirmPassword} = req.body;
-        const valid = jwt.verify(token, process.env.PRIVATE_KEY);
-        
-        if(!valid.checkOtpAuth){
-            throw new customErrorHandler(400, "Otp varification failed. Please try again.")
+        const token = req.cookies?.otpVarified;
+        const userId = req.user._doc._id;
+        const{ newPassowrd, confirmPassword} = req.body;
+
+        if(!token){
+            throw new customErrorHandler(400, "Please generate a new OTP for the password change request.")
         }
+
+        const valid = jwt.verify(token, process.env.PRIVATE_KEY);
 
         if(!newPassowrd && ! confirmPassword){
             throw new customErrorHandler(400, "Please enter a required field: token, newPassword or confirmPassword.")
@@ -80,6 +82,8 @@ const resetPassword = async (req, res, next) =>{
         if(!updatePass){
             throw new customErrorHandler(400, "Password updation failed!")
         }
+
+        res.clearCookie('otpVarified');
 
         res.status(200).json({
             status:"Success",

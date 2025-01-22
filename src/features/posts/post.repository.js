@@ -1,12 +1,16 @@
 
 import {BSON}  from 'bson'
 import {getDatabase}  from '../../database/mongoDb.js'
-
 const db = getDatabase();
+
+import mongoose from 'mongoose';
+import  postSchema  from "./post.schemas.js"
+
+const PostModel = mongoose.model('Post', postSchema)
 
 const postsAll = async () =>{
     try{
-        const posts = await db.collection('posts').find().toArray();
+        const posts = await PostModel.find();
         return posts;
     } catch(err){
         console.log("Error while getting all posts: ", err)
@@ -14,7 +18,7 @@ const postsAll = async () =>{
 }
 const postsForUsers = async (userId) =>{
     try{
-        const posts = await db.collection('posts').find({userId}).toArray();
+        const posts = await PostModel.find({userId});
         return posts;
     } catch(err){
         console.log("Error while getting users posts: ", err)
@@ -23,8 +27,8 @@ const postsForUsers = async (userId) =>{
 
 const postById = async (postId) =>{
     try{
-        const _id = new BSON.ObjectId(postId);
-        const post = await db.collection('posts').findOne({_id})
+        const _id = postId;
+        const post = await PostModel.findById({_id})
         if(!post){
             return false
         }
@@ -34,11 +38,9 @@ const postById = async (postId) =>{
     }
 }
 
-
 const creatingPost = async (newPost) =>{
     try{
-
-        const post = await db.collection('posts').insertOne(newPost)
+        const post = await PostModel.create(newPost)
         return post;
     } catch(err){
         console.log("Error while posting: ", err)
@@ -47,8 +49,9 @@ const creatingPost = async (newPost) =>{
 
 const updatingPost = async (postId, updatedData) =>{
     try{
-        const _id = new BSON.ObjectId(postId);
-        const post = await db.collection('posts').updateOne({_id},{$set: updatedData})
+        const _id = postId;
+        const postUpdate = await PostModel.findByIdAndUpdate({_id}, updatedData)
+        const post = await PostModel.findOne({_id})
         return post;
     } catch(err){
         console.log("Error while updating post: ", err)
@@ -57,8 +60,8 @@ const updatingPost = async (postId, updatedData) =>{
 
 const deletingPost = async (postId) =>{
     try{
-        const _id = new BSON.ObjectId(postId);
-        const post = await db.collection('posts').deleteOne({_id})
+        const _id = postId;
+        const post = await PostModel.findByIdAndDelete({_id})
         if(!post){
             return false
         }
@@ -68,4 +71,9 @@ const deletingPost = async (postId) =>{
     }
 }
 
-export {postsAll, postsForUsers, postById, creatingPost, updatingPost, deletingPost}
+const checkPostOwner =  async (userId) =>{
+    const checkOwner = await PostModel.findOne({userId})
+    return checkOwner;
+}
+
+export {postsAll, postsForUsers, postById, creatingPost, updatingPost, deletingPost, checkPostOwner}

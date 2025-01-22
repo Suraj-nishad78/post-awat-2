@@ -23,6 +23,7 @@ const signupUser = async (req, res, next) =>{
         
 
     } catch (err){
+        console.log("Error while sign ", err);
         next(err)
     }
 }
@@ -31,7 +32,7 @@ const loginUser = async (req, res, next) =>{
     try{
         const {email, password} = req.body;
         const user = await userRepo.signin(email)
-
+        
         if(!user){
             throw new customErrorHandler(400, "Email doesn't exist.")
         }
@@ -42,7 +43,9 @@ const loginUser = async (req, res, next) =>{
             throw new customErrorHandler(400, "Invalid credentials!")
         }
         
-        const token = jwt.sign(user,process.env.PRIVATE_KEY,{expiresIn:'10m'})
+        const payload = {...user};
+
+        const token = jwt.sign(payload, process.env.PRIVATE_KEY, {expiresIn:'10m'})
 
         res.cookie("jwtToken", token, {httpOnly:true, maxAge: 10 * 60 * 1000})
         .status(200)
@@ -108,7 +111,7 @@ const getUserDetails = async(req, res, next) =>{
 
 const updateUserDetails = async (req, res, next) =>{
     try{
-        const ownerId = req.user._id;
+        const ownerId = req.user._doc._id;
         const {userId} = req.params;
         const {name, email} = req.body;
         const{ file} = req;

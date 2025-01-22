@@ -13,7 +13,7 @@ import otpsRoutes  from './src/features/otp/otp.route.js'
 import postsRoutes  from './src/features/posts/post.route.js'
 
 //functions
-import {connectDatabase}  from './src/database/mongoDb.js'
+import {connectDatabase, connectDBusingMongoose}  from './src/database/mongoDb.js'
 import {customErrorHandler, errorHandlerMiddleware} from "./src/middleware/errorHandler.middleware.js"
 
 //middleware
@@ -36,5 +36,5 @@ app.use(errorHandlerMiddleware)
 
 app.listen(4000, ()=>{
     console.log("Server is running on 4000")
-    connectDatabase()
+    connectDBusingMongoose()
 })

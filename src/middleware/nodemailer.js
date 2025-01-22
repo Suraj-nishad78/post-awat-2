@@ -20,7 +20,7 @@ const sendOtpMail = async (req, res, next) =>{
 
     const otp = generateOTP()
     req.otp = otp;
-    const {name, email} = req.user;
+    const {name, email} = req.user._doc;
 
     let mailOptions = {
         from:process.env.SENDER_MAIL,

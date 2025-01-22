@@ -1,24 +1,36 @@
 
 
-import {BSON}  from 'bson'
-import {getDatabase}  from '../../database/mongoDb.js'
+import mongoose from 'mongoose';
+import {otpSchema} from "./otp.schema.js"
+import {UserModel} from "../../features/users/user.repository.js"
 
-const db = getDatabase();
+const OtpModel = mongoose.model("Otp", otpSchema)
 
 const otpCreated = async(userId, otp) =>{
     try{
         const otpObj = {userId, otp}
-         await db.collection('OTPs').deleteMany({userId})
-        const otpVar = await db.collection('OTPs').insertOne(otpObj)
-        return otpVar.acknowledged;
+        await OtpModel.deleteMany({userId})
+        const otpVar = await OtpModel.create(otpObj)
+        autoDeleteOtp(otpVar._id)  
+        return otpVar;
     } catch (err){
         console.log("Erro while creating otp: ", err)
     }
 }
 
+let timerId;
+const autoDeleteOtp =  (id) =>{
+    const _id = id
+    timerId = setTimeout( async ()=>{
+        await OtpModel.findByIdAndDelete({_id})
+    }, 5 * 60 * 1000)
+}
+
 const checkOtp = async (userId) =>{
     try{
-        const otpDoc = await db.collection('OTPs').findOne({userId})
+        const otpDoc = await OtpModel.findOne({userId})
+         await OtpModel.deleteOne({userId})
+        clearTimeout(timerId)
         return otpDoc;
     } catch(err){
         console.log("Erro while checking otp: ", err)
@@ -27,8 +39,8 @@ const checkOtp = async (userId) =>{
 
 const updatePassword = async(userId, password) =>{
     try{
-        const _id = new BSON.ObjectId(userId);
-        const user = await db.collection('users').updateOne({_id}, {$set: {password}})
+        const _id = userId;
+        const user = await UserModel.findByIdAndUpdate({_id}, {password})
         return user.acknowledged;
     } catch (err){
         console.log("Error while Signup: ", err);

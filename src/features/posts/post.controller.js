@@ -21,7 +21,7 @@ const allPosts = async (req, res, next) =>{
 
 const userPosts = async (req, res, next) =>{
     try{
-        const userId = req.user._id;
+        const userId = req.user._doc._id;
         const posts = await postRepo.postsForUsers(userId)
 
         if(!posts.length){
@@ -57,15 +57,16 @@ const getPostById = async (req, res, next) =>{
 }
 const createPost = async (req, res, next) =>{
     try{
-        const {caption, imageURL} = req.body;
-        const userId = req.user._id;
+        const {caption, imageUrl} = req.body;
+        const{ file} = req;
+        const userId = req.user._doc._id;
         const post = {
             userId, 
             caption, 
-            imageURL
+            imageUrl:file.filename
         }
         const posted = await postRepo.creatingPost(post)
-
+    
         if(!posted){    
             throw new customErrorHandler(400, "Posting failed. Please try again!")
         }
@@ -82,8 +83,17 @@ const createPost = async (req, res, next) =>{
 const updatePostById = async (req, res, next) =>{
     try{
         const {id} = req.params;
-        const {caption, imageURL} = req.body;
-        const updatedData = {caption, imageURL}
+        const {caption, imageUrl} = req.body;
+        const{ file} = req;
+        const updatedData = {caption, imageUrl:file.filename}
+        const userId = req.user._doc._id;
+
+        const checkPostOwner = await postRepo.checkPostOwner(userId)
+
+        if(!checkPostOwner){
+            throw new customErrorHandler(400, "You are not allowed to update ths post!")
+        }
+
         const post = await postRepo.updatingPost(id, updatedData)
         if(!post){
             throw new customErrorHandler(400, "Post updating failed!")
@@ -98,10 +108,19 @@ const updatePostById = async (req, res, next) =>{
         next(err)
     }
 }
+
 const deletePostById = async (req, res, next) =>{
     try{
         const {id} = req.params;
         const post = await postRepo.deletingPost(id)
+
+        const userId = req.user._doc._id;
+        const checkPostOwner = await postRepo.checkPostOwner(userId)
+
+        if(!checkPostOwner){
+            throw new customErrorHandler(400, "You are not allowed to delete this post!")
+        }
+
         if(!post){
             throw new customErrorHandler(400, "No post found!")
         }
