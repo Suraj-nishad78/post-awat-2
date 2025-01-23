@@ -7,9 +7,9 @@ import {customErrorHandler} from "../../middleware/errorHandler.middleware.js"
 
 const signupUser = async (req, res, next) =>{
     try{
-        const {name, email, password} = req.body;
+        const {name, email, gender, password} = req.body;
         const encryptPassword = await bcrypt.hash(password, 10)
-        const newUser = {name, email, password:encryptPassword};
+        const newUser = {name, email, gender, password:encryptPassword};
         const user = await userRepo.signup(newUser)
         if(!user){
             throw new customErrorHandler(404, "User sign up failed. Please try again!")
@@ -113,9 +113,9 @@ const updateUserDetails = async (req, res, next) =>{
     try{
         const ownerId = req.user._doc._id;
         const {userId} = req.params;
-        const {name, email} = req.body;
+        const {name, email, gender} = req.body;
         const{ file} = req;
-        const updatedData = {name, email, avatar:file.filename}
+        const updatedData = {name, email, gender, avatar:file.filename}
 
         if(ownerId !== userId){
             throw new customErrorHandler(400, "You are not allow to update this user details")

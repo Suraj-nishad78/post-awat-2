@@ -1,7 +1,4 @@
 
-import {BSON}  from 'bson'
-import {getDatabase}  from '../../database/mongoDb.js'
-const db = getDatabase();
 
 import mongoose from 'mongoose';
 import  postSchema  from "./post.schemas.js"
