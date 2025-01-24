@@ -21,7 +21,7 @@ const allPosts = async (req, res, next) =>{
 
 const userPosts = async (req, res, next) =>{
     try{
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const posts = await postRepo.postsForUsers(userId)
 
         if(!posts.length){
@@ -59,7 +59,7 @@ const createPost = async (req, res, next) =>{
     try{
         const {caption, imageUrl} = req.body;
         const{ file} = req;
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const post = {
             userId, 
             caption, 
@@ -80,14 +80,15 @@ const createPost = async (req, res, next) =>{
         next(err)
     }
 }
+
 const updatePostById = async (req, res, next) =>{
     try{
         const {id} = req.params;
         const {caption, imageUrl} = req.body;
         const{ file} = req;
         const updatedData = {caption, imageUrl:file.filename}
-        const userId = req.user._doc._id;
-
+        const userId = req.user._id;
+        console.log(userId);
         const checkPostOwner = await postRepo.checkPostOwner(userId)
 
         if(!checkPostOwner){
@@ -112,14 +113,15 @@ const updatePostById = async (req, res, next) =>{
 const deletePostById = async (req, res, next) =>{
     try{
         const {id} = req.params;
-        const post = await postRepo.deletingPost(id)
-
-        const userId = req.user._doc._id;
+        
+        const userId = req.user._id;
         const checkPostOwner = await postRepo.checkPostOwner(userId)
-
+        
         if(!checkPostOwner){
             throw new customErrorHandler(400, "You are not allowed to delete this post!")
         }
+
+        const post = await postRepo.deletingPost(id)
 
         if(!post){
             throw new customErrorHandler(400, "No post found!")

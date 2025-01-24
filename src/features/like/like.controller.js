@@ -32,7 +32,7 @@ const getLikedPostById = async (req, res, next) =>{
 const toggleLike = async (req, res, next) =>{
     try{
         const {postId} = req.params;
-        let userId = req.user._doc._id;
+        let userId = req.user._id;
     
         const checkPostExist = await postById(postId);
     

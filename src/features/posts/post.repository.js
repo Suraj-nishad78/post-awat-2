@@ -13,6 +13,7 @@ const postsAll = async () =>{
         console.log("Error while getting all posts: ", err)
     }
 }
+
 const postsForUsers = async (userId) =>{
     try{
         const posts = await PostModel.find({userId});
@@ -69,8 +70,13 @@ const deletingPost = async (postId) =>{
 }
 
 const checkPostOwner =  async (userId) =>{
-    const checkOwner = await PostModel.findOne({userId})
-    return checkOwner;
+    try{
+        const checkOwner = await PostModel.findOne({userId})
+        return checkOwner;
+    }
+    catch(err){
+        console.log("Error while checking post owner: ", err)
+    }
 }
 
 export {postsAll, postsForUsers, postById, creatingPost, updatingPost, deletingPost, checkPostOwner}

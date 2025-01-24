@@ -42,7 +42,7 @@ const postCommentById = async (req, res, next) =>{
     try{
         const {pId} = req.params;
         const postId = pId;
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const {content} = req.body;
 
         if(!content) {
@@ -76,7 +76,7 @@ const postCommentById = async (req, res, next) =>{
 const updateCommentById = async (req, res, next) =>{
     try{
         const{id} = req.params;
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const {content} = req.body;
         
         const checkComment = await checkCommentExist(id)
@@ -111,7 +111,7 @@ const updateCommentById = async (req, res, next) =>{
 const deleteCommentById = async(req, res, next) =>{
     try{
         const {id} = req.params;
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const checkComment = await checkCommentExist(id)
         
         if(!checkComment){  

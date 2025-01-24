@@ -6,7 +6,7 @@ import {customErrorHandler} from "../../middleware/errorHandler.middleware.js"
 
 const otpSend = async (req, res, next) =>{
     try{
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const otpNum = req.otp;
         const otp = await bcrypt.hash(otpNum, 10)
         const otpCreation = await otpRepo.otpCreated(userId, otp);
@@ -26,7 +26,7 @@ const otpSend = async (req, res, next) =>{
 const otpVarify = async (req, res, next) =>{
     try {
         const {otp} = req.body;
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
 
         if(!otp){
             throw new customErrorHandler(400, "Please enter a otp!")
@@ -59,7 +59,7 @@ const resetPassword = async (req, res, next) =>{
     try {
 
         const token = req.cookies?.otpVarified;
-        const userId = req.user._doc._id;
+        const userId = req.user._id;
         const{ newPassowrd, confirmPassword} = req.body;
 
         if(!token){

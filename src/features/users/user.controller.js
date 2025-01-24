@@ -43,9 +43,9 @@ const loginUser = async (req, res, next) =>{
             throw new customErrorHandler(400, "Invalid credentials!")
         }
         
-        const payload = {...user};
+        // const payload = {...user};
 
-        const token = jwt.sign(payload, process.env.PRIVATE_KEY, {expiresIn:'10m'})
+        const token = jwt.sign(user.toJSON(), process.env.PRIVATE_KEY, {expiresIn:'10m'})
 
         res.cookie("jwtToken", token, {httpOnly:true, maxAge: 10 * 60 * 1000})
         .status(200)
@@ -111,7 +111,7 @@ const getUserDetails = async(req, res, next) =>{
 
 const updateUserDetails = async (req, res, next) =>{
     try{
-        const ownerId = req.user._doc._id;
+        const ownerId = req.user._id;
         const {userId} = req.params;
         const {name, email, gender} = req.body;
         const{ file} = req;

@@ -20,7 +20,7 @@ const sendOtpMail = async (req, res, next) =>{
 
     const otp = generateOTP()
     req.otp = otp;
-    const {name, email} = req.user._doc;
+    const {name, email} = req.user;
 
     let mailOptions = {
         from:process.env.SENDER_MAIL,
@@ -34,6 +34,10 @@ const sendOtpMail = async (req, res, next) =>{
         next()
     }catch(err){
         console.log('Error occured while sending mail: ', err)
+        res.status(500).json({
+            status:"FAILED",
+            msg:"mail sending failed!"
+        })
     }
 
 }
