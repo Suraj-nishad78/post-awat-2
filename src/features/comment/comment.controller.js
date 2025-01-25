@@ -27,7 +27,7 @@ const getCommentByPid = async (req, res, next) =>{
         const getPost = await postById(postId)
         
         const post = {
-            ...getPost._doc,
+            ...getPost.toJSON(),
             "Post Comments": comment
         }
     

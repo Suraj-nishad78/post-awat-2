@@ -11,7 +11,9 @@ const allLikes = async () =>{
 }
 
 const likeById = async (postId) =>{
-    const likedPost = await LikeModel.find({postId})
+    const likedPost = await LikeModel.find({postId}).populate("postId").populate({
+        path:"userId",
+        select:"-password -gender"})
     return likedPost;
 }
 
@@ -24,7 +26,7 @@ const toggleLikePost = async (userId, postId) =>{
             const like = await LikeModel.deleteOne(newLike)
             return false;
         } else {
-            const like = await LikeModel.create(newLike)
+            const like = (await LikeModel.create(newLike)).populate("postId")
             return like;
         }
     } catch(err){

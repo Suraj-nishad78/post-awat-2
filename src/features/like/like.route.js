@@ -12,4 +12,3 @@ router.get("/:postId", getLikedPostById)
 router.get("/toggle/:postId", toggleLike)
 
 export default router
-

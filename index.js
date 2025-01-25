@@ -13,6 +13,7 @@ import otpsRoutes  from './src/features/otp/otp.route.js'
 import postsRoutes  from './src/features/posts/post.route.js'
 import likesRoutes  from './src/features/like/like.route.js'
 import commentRoutes  from './src/features/comment/comment.route.js'
+import friendsRoutes  from './src/features/friends/friend.route.js'
 
 //functions
 import {connectDatabase}  from './src/database/mongoDb.js'
@@ -31,6 +32,7 @@ app.use("/api/otp", otpsRoutes)
 app.use("/api/posts", postsRoutes)
 app.use("/api/likes", likesRoutes)
 app.use("/api/comments", commentRoutes)
+app.use("/api/friends", friendsRoutes)
 
 app.get("*", (req,res, next)=>{
     throw new customErrorHandler(404, `No route found for '${req.originalUrl}'`)

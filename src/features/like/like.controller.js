@@ -12,17 +12,10 @@ const getLikedPostById = async (req, res, next) =>{
             throw new customErrorHandler(404, `No liked post was found for the post ID: ${postId}.`)
         }
 
-        const gettingPost = await postById(postId);
-        
-        const post = {
-            ...gettingPost._doc,
-            TotalLikes: likedPost.length
-        }
-
         res.status(200).json({
             status:"Success",
             msg:`Like post`,
-            post
+            likedPost
         })
     } catch (err){
         next(err)

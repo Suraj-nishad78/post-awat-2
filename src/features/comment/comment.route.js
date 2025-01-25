@@ -13,4 +13,5 @@ router.post("/:pId", commentCntrl.postCommentById)
 router.patch("/:id", commentCntrl.updateCommentById)
 router.delete("/:id", commentCntrl.deleteCommentById)
 
+
 export default router

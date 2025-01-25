@@ -15,7 +15,7 @@ const commentsByPId = async(postId) =>{
 }
 
 const postComment = async (cmt) =>{
-    const comment = await CommentModel.create(cmt)
+    const comment = (await CommentModel.create(cmt)).populate("postId")
     return comment;
 }
 
