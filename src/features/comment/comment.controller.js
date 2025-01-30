@@ -28,7 +28,8 @@ const getCommentByPid = async (req, res, next) =>{
         
         const post = {
             ...getPost.toJSON(),
-            "Post Comments": comment
+            "Total commnets": comment.length,
+            "Comments": comment
         }
     
         res.status(200).json(post)
