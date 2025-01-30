@@ -15,7 +15,7 @@ const commentsByPId = async(postId) =>{
 }
 
 const postComment = async (cmt) =>{
-    const comment = (await CommentModel.create(cmt)).populate("postId")
+    const comment = (await (await CommentModel.create(cmt)).populate("postId")).populate({path:"userId", select:"-password -loggers"})
     return comment;
 }
 

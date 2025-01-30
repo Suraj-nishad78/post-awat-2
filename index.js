@@ -1,5 +1,7 @@
 import express  from 'express'
 import bodyParser  from 'body-parser'
+import swaggerUi from "swagger-ui-express"
+import { readFileSync } from "fs"
 import {join, resolve} from "path"
 import cookieParser  from 'cookie-parser'
 import dotenv  from 'dotenv'
@@ -18,6 +20,11 @@ import friendsRoutes  from './src/features/friends/friend.route.js'
 //functions
 import {connectDatabase}  from './src/database/mongoDb.js'
 import {customErrorHandler, errorHandlerMiddleware} from "./src/middleware/errorHandler.middleware.js"
+import logger from "./src/middleware/logger.middleware.js"
+
+//Import swaggerJSON file
+const swaggerJSONPath = resolve("./documentation/swagger.json");
+const swaggerJSON = JSON.parse(readFileSync(swaggerJSONPath, "utf-8"));
 
 //middleware
 app.use(cookieParser())
@@ -29,10 +36,11 @@ app.use(express.static(join(process.cwd(), 'public')));
 //Routes 
 app.use("/api/users", usersRoutes)
 app.use("/api/otp", otpsRoutes)
-app.use("/api/posts", postsRoutes)
-app.use("/api/likes", likesRoutes)
-app.use("/api/comments", commentRoutes)
-app.use("/api/friends", friendsRoutes)
+app.use("/api/posts", logger, postsRoutes)
+app.use("/api/likes", logger, likesRoutes)
+app.use("/api/comments", logger, commentRoutes)
+app.use("/api/friends", logger, friendsRoutes)
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerJSON));
 
 app.get("*", (req,res, next)=>{
     throw new customErrorHandler(404, `No route found for '${req.originalUrl}'`)

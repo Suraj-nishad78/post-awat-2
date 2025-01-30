@@ -26,7 +26,7 @@ const signin = async (email) =>{
 }
 
 const getUsers = async () =>{
-   const users = await UserModel.find({}, {password:0})
+   const users = await UserModel.find({}, {password:0, loggers:0})
    return users;
 }
 
@@ -51,8 +51,25 @@ const updateDetails = async(userId, updatedata) =>{
     }
 }
 
+const updateLoggerArray = async (_id, token) =>{
+    try{
+        await UserModel.findByIdAndUpdate(_id, {$push: {loggers: token}})
+        const user = await UserModel.findById(_id)
+        removeToken(_id, token)
+        return user;
+    } catch(err){
+        console.log("Error while updating logger's array: ", err);
+    }
+}
 
-export {signup, signin, getUsers, findOneUser, updateDetails}
+const removeToken = (_id, token) =>{
+    setTimeout( async()=>{
+        await UserModel.findByIdAndUpdate(_id, {$pull: {loggers: token}})
+    }, 10* 60 * 1000)
+}
+
+
+export {signup, signin, getUsers, findOneUser, updateDetails, updateLoggerArray}
 
 
 

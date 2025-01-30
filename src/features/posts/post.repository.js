@@ -7,7 +7,7 @@ const PostModel = mongoose.model('Post', postSchema)
 
 const postsAll = async () =>{
     try{
-        const posts = await PostModel.find().populate({path:"userId", select:"-password"});
+        const posts = await PostModel.find().populate({path:"userId", select:"-password -loggers"});
         return posts;
     } catch(err){
         console.log("Error while getting all posts: ", err)
@@ -16,7 +16,7 @@ const postsAll = async () =>{
 
 const postsForUsers = async (userId) =>{
     try{
-        const posts = await PostModel.find({userId}).populate({path:"userId", select:"-password"});
+        const posts = await PostModel.find({userId}).populate({path:"userId", select:"-password -loggers"});
         return posts;
     } catch(err){
         console.log("Error while getting users posts: ", err)
@@ -26,7 +26,7 @@ const postsForUsers = async (userId) =>{
 const postById = async (postId) =>{
     try{
         const _id = postId;
-        const post = await PostModel.findById({_id}).populate({path:"userId", select:"-password"})
+        const post = await PostModel.findById({_id}).populate({path:"userId", select:"-password -loggers"})
         if(!post){
             return false
         }

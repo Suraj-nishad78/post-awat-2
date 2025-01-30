@@ -24,5 +24,6 @@ export const userSchema = new mongoose.Schema({
     avatar:{
         type:String,
         default:null
-    }
+    },
+    loggers:[String]
 })

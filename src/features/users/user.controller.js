@@ -41,11 +41,11 @@ const loginUser = async (req, res, next) =>{
         
         if(!checkPassword){
             throw new customErrorHandler(400, "Invalid credentials!")
-        }
-        
-        // const payload = {...user};
+        }        
 
         const token = jwt.sign(user.toJSON(), process.env.PRIVATE_KEY, {expiresIn:'10m'})
+
+        const logger = await userRepo.updateLoggerArray(user._id, token)
 
         res.cookie("jwtToken", token, {httpOnly:true, maxAge: 10 * 60 * 1000})
         .status(200)
@@ -58,7 +58,6 @@ const loginUser = async (req, res, next) =>{
     } catch (err){
         next(err)
     }
-
 }
 
 const logoutUser = (req, res, next) =>{
@@ -73,6 +72,24 @@ const logoutUser = (req, res, next) =>{
             msg:"You are logout successfully!"
         })
         
+    } catch(err){
+        next(err)
+    }
+}
+
+const logoutAllDevices = async (req, res, next) =>{
+    try{
+        const _id = req.user._id;
+        const logoutAll = await userRepo.UserModel.findByIdAndUpdate(_id, {$set: {loggers: []}})
+        if(!logoutAll){
+            throw new customErrorHandler(400, "Logout all devices failed.")
+        } 
+
+        res.status(200).json({
+            status:"Success",
+            msg:"you are logout all devices Successfully!"
+        })
+
     } catch(err){
         next(err)
     }
@@ -138,7 +155,7 @@ const updateUserDetails = async (req, res, next) =>{
 
 }
 
-export {allUsers, loginUser, signupUser, logoutUser, getUserDetails, updateUserDetails}
+export {allUsers, loginUser, signupUser, logoutUser, logoutAllDevices, getUserDetails, updateUserDetails}
 
 
 

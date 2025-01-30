@@ -8,7 +8,7 @@ const RequestModel = mongoose.model("Request", requestSchema)
 
 const getFriends = async (userId) =>{
     try{
-        const friends = await FriendsModel.find({userId}).populate({path:"friendId", select:"-password"});
+        const friends = await FriendsModel.find({userId}).populate({path:"friendId", select:"-password -loggers"});
         return friends;
     } catch(err){
         console.log("Error while getting users friends: ", err)
@@ -17,7 +17,7 @@ const getFriends = async (userId) =>{
 
 const pendingRequests = async (userId) =>{
     try{
-        const requests = await RequestModel.find({userId}).populate({path:"friendId", select:"-password"});
+        const requests = await RequestModel.find({userId}).populate({path:"friendId", select:"-password -loggers"});
         return requests;
     } catch (err){
         console.log("Error while getting requests: ", err);

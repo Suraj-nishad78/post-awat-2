@@ -13,7 +13,7 @@ const allLikes = async () =>{
 const likeById = async (postId) =>{
     const likedPost = await LikeModel.find({postId}).populate("postId").populate({
         path:"userId",
-        select:"-password -gender"})
+        select:"-password -gender -loggers"})
     return likedPost;
 }
 
